@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - DATABASE_URL=postgresql://tpid:tpid_secret@db:5432/tpid
+      - NEXTAUTH_URL=http://localhost:4000
+      - NEXTAUTH_SECRET=tpid-dev-secret-key-2024-change-in-production
+      - NODE_ENV=production
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=
+      - SMTP_PASS=
+      - OPENAI_API_KEY=
+      - SLACK_WEBHOOK_URL=
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tpid
+      POSTGRES_PASSWORD: tpid_secret
+      POSTGRES_DB: tpid
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tpid"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Optional: Adminer for DB management
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

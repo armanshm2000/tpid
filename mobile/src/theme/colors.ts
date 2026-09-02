@@ -1,0 +1,41 @@
+export const colors = {
+  brand: {
+    50: "#eff6ff",
+    100: "#dbeafe",
+    200: "#bfdbfe",
+    300: "#93c5fd",
+    400: "#60a5fa",
+    500: "#3b82f6",
+    600: "#2563eb",
+    700: "#1d4ed8",
+    800: "#1e40af",
+    900: "#1e3a8a",
+  },
+  light: {
+    background: "#f8fafc",
+    surface: "#ffffff",
+    text: "#171717",
+    textSecondary: "#6b7280",
+    border: "#e5e7eb",
+  },
+  dark: {
+    background: "#0a0a0a",
+    surface: "#1f2937",
+    text: "#f9fafb",
+    textSecondary: "#9ca3af",
+    border: "#374151",
+  },
+  health: {
+    good: "#16a34a",
+    warning: "#d97706",
+    danger: "#dc2626",
+    unknown: "#6b7280",
+  },
+  status: {
+    COMPLETED: "#16a34a",
+    IN_PROGRESS: "#2563eb",
+    TESTING: "#9333ea",
+    DEVELOPMENT: "#4f46e5",
+    PLANNING: "#6b7280",
+  },
+};

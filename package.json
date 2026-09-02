@@ -1,0 +1,48 @@
+{
+  "name": "tpid",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 4000",
+    "build": "next build",
+    "start": "next start -p 4000",
+    "lint": "next lint",
+    "db:push": "npx prisma db push",
+    "db:seed": "node prisma/seed.js",
+    "db:setup": "npx prisma generate && npx prisma db push && node prisma/seed.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "npx playwright test",
+    "test:all": "vitest run && npx playwright test"
+  },
+  "dependencies": {
+    "@next/swc-win32-x64-msvc": "^14.2.11",
+    "@prisma/client": "^5.19.0",
+    "bcryptjs": "^2.4.3",
+    "next": "14.2.11",
+    "next-auth": "^4.24.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^14.3.1",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.16.0",
+    "@types/react": "^18.3.8",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.45",
+    "prisma": "^5.19.0",
+    "tailwindcss": "^3.4.11",
+    "typescript": "^5.6.2",
+    "vitest": "^2.0.5"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "prisma": true,
+    "@prisma/client": true,
+    "@prisma/engines": true
+  }
+}

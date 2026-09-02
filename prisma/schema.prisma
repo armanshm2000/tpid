@@ -1,0 +1,218 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      String   @default("VIEWER")
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects  Project[] @relation("ProjectOwner")
+  evidence  Evidence[] @relation("EvidenceAuthor")
+  aiReports AIReport[] @relation("ReportAuthor")
+  risks     Risk[] @relation("RiskAuthor")
+
+  @@map("users")
+}
+
+model Project {
+  id                   String   @id @default(cuid())
+  name                 String
+  slug                 String   @unique
+  description          String?
+  mission              String?
+  vision               String?
+  category             String   @default("OTHER")
+  status               String   @default("PLANNING")
+  completionPercentage Int      @default(0)
+  priority             String   @default("MEDIUM")
+  healthScore          Int      @default(0)
+  ownerId              String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  owner           User           @relation("ProjectOwner", fields: [ownerId], references: [id])
+  dna             ProjectDNA?
+  architecture    ArchitectureComponent[]
+  roadmapItems    RoadmapItem[]
+  contracts       Contract[]
+  evidence        Evidence[]
+  risks           Risk[]
+  aiReports       AIReport[]
+
+  @@map("projects")
+}
+
+model ProjectDNA {
+  id                     String   @id @default(cuid())
+  projectId              String   @unique
+  vision                 String?
+  mission                String?
+  coreObjectives         String?
+  targetUsers            String?
+  businessModel          String?
+  technicalPhilosophy    String?
+  architecturePrinciples String?
+  securityPrinciples     String?
+  futureExpansion        String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_dna")
+}
+
+model ArchitectureComponent {
+  id           String   @id @default(cuid())
+  projectId    String
+  name         String
+  type         String
+  technology   String
+  description  String?
+  health       String   @default("UNKNOWN")
+  dependencies String?
+  metadata     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("architecture_components")
+}
+
+model RoadmapItem {
+  id           String    @id @default(cuid())
+  projectId    String
+  phase        String
+  title        String
+  description  String?
+  status       String    @default("PENDING")
+  progress     Int       @default(0)
+  deadline     DateTime?
+  startDate    DateTime?
+  dependencies String?
+  order        Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("roadmap_items")
+}
+
+model Contract {
+  id         String    @id @default(cuid())
+  projectId  String
+  name       String
+  description String?
+  type       String
+  status     String    @default("DRAFT")
+  version    String    @default("1.0")
+  verified   Boolean   @default(false)
+  verifiedAt DateTime?
+  content    String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  project  Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  versions ContractVersion[]
+
+  @@map("contracts")
+}
+
+model ContractVersion {
+  id         String    @id @default(cuid())
+  contractId String
+  version    String
+  content    String?
+  changedBy  String?
+  changeNote String?
+  createdAt  DateTime  @default(now())
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@map("contract_versions")
+}
+
+model Evidence {
+  id         String    @id @default(cuid())
+  projectId  String
+  authorId   String
+  title      String
+  type       String
+  description String?
+  fileUrl    String?
+  verified   Boolean   @default(false)
+  verifiedAt DateTime?
+  metadata   String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author  User    @relation("EvidenceAuthor", fields: [authorId], references: [id])
+
+  @@map("evidence")
+}
+
+model Risk {
+  id          String    @id @default(cuid())
+  projectId   String
+  authorId    String
+  title       String
+  description String?
+  severity    String    @default("MEDIUM")
+  status      String    @default("OPEN")
+  mitigation  String?
+  detectedAt  DateTime  @default(now())
+  resolvedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author  User    @relation("RiskAuthor", fields: [authorId], references: [id])
+
+  @@map("risks")
+}
+
+model AIReport {
+  id              String   @id @default(cuid())
+  projectId       String
+  authorId        String
+  title           String
+  summary         String
+  strengths       String?
+  risks           String?
+  recommendations String?
+  score           Int?
+  metadata        String?
+  createdAt       DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author  User    @relation("ReportAuthor", fields: [authorId], references: [id])
+
+  @@map("ai_reports")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String?
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@map("audit_logs")
+}
